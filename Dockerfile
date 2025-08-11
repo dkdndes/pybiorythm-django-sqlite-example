@@ -9,11 +9,9 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
 # Set working directory
 WORKDIR /app
 
-# Copy dependency files
-COPY pyproject.toml uv.lock ./
-
-# Install dependencies
-RUN uv sync --no-cache
+# Create virtual environment and install dependencies
+RUN uv venv
+RUN uv pip install --no-cache-dir django>=5.2.5 python-dateutil>=2.8.0 python-dotenv>=1.0.0 "biorythm @ git+https://github.com/dkdndes/pybiorythm.git"
 
 # Copy application code
 COPY . .
