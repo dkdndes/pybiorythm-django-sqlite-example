@@ -13,6 +13,10 @@ WORKDIR /app
 RUN uv venv
 RUN uv pip install --no-cache-dir django>=5.2.5 python-dateutil>=2.8.0 python-dotenv>=1.0.0 "biorythm @ git+https://github.com/dkdndes/pybiorythm.git"
 
+# Set environment variables for Docker
+ENV DJANGO_SECRET_KEY=docker-secret-key-change-in-production
+ENV DEBUG=False
+
 # Copy application code
 COPY . .
 
