@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.9", "3.10", "3.11", "3.12"]
+        python-version: ["3.10", "3.11", "3.12"]
 
     steps:
     - uses: actions/checkout@v4
@@ -25,7 +25,19 @@ jobs:
       run: uv python install ${{ matrix.python-version }}
     
     - name: Install dependencies
-      run: uv sync
+      run: uv sync --extra dev
+    
+    - name: Run ruff linting
+      run: uv run ruff check .
+    
+    - name: Run ruff formatting check
+      run: uv run ruff format --check .
+    
+    - name: Run bandit security scan
+      run: uv run bandit -r biorhythm_storage/ --exclude "**/migrations/**"
+    
+    - name: Run safety dependency check
+      run: uv run safety check
     
     - name: Run migrations
       run: uv run python manage.py migrate
