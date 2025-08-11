@@ -18,9 +18,9 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "biorhythm_storage.settings")
 django.setup()
 
-from django.core.management import call_command
+from django.core.management import call_command  # noqa: E402
 
-from biorhythm_data.models import BiorhythmCalculation, BiorhythmData, Person
+from biorhythm_data.models import BiorhythmCalculation, BiorhythmData, Person  # noqa: E402
 
 
 def main():
