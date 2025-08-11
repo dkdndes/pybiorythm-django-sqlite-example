@@ -9,18 +9,19 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
 # Set working directory
 WORKDIR /app
 
-# Copy dependency files
-COPY pyproject.toml uv.lock ./
+# Create virtual environment and install dependencies
+RUN uv venv
+RUN uv pip install --no-cache-dir django>=5.2.5 python-dateutil>=2.8.0 python-dotenv>=1.0.0 "biorythm @ git+https://github.com/dkdndes/pybiorythm.git"
 
-# Install dependencies
-RUN uv sync --frozen --no-cache
+# Set environment variables for Docker
+ENV DJANGO_SECRET_KEY=docker-secret-key-change-in-production
+ENV DEBUG=False
 
 # Copy application code
 COPY . .
 
-# Run migrations and collect static files
+# Run migrations (no static files needed for storage-only example)
 RUN uv run python manage.py migrate
-RUN uv run python manage.py collectstatic --noinput
 
 # Expose port
 EXPOSE 8000

@@ -678,7 +678,6 @@ wheels = [
 
 [[package]]
 name = "pybiorythm-django-sqlite-example"
-version = "1.0.0"
 source = { editable = "." }
 dependencies = [
     { name = "biorythm" },
