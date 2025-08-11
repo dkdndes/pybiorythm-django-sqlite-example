@@ -9,7 +9,8 @@ This command demonstrates how to:
 
 Usage:
     python manage.py load_biorhythm_data --name "John Doe" --birthdate 1990-05-15 --days 365
-    python manage.py load_biorhythm_data --name "Jane Smith" --birthdate 1985-03-22 --days 730 --target-date 2024-01-01
+    python manage.py load_biorhythm_data --name "Jane Smith" --birthdate 1985-03-22 \
+        --days 730 --target-date 2024-01-01
 """
 
 from datetime import date, datetime
@@ -69,17 +70,19 @@ class Command(BaseCommand):
         # Parse and validate inputs
         try:
             birthdate = datetime.strptime(options["birthdate"], "%Y-%m-%d").date()
-        except ValueError:
-            raise CommandError(f"Invalid birthdate format: {options['birthdate']}. Use YYYY-MM-DD")
+        except ValueError as err:
+            raise CommandError(
+                f"Invalid birthdate format: {options['birthdate']}. Use YYYY-MM-DD"
+            ) from err
 
         target_date = None
         if options["target_date"]:
             try:
                 target_date = datetime.strptime(options["target_date"], "%Y-%m-%d").date()
-            except ValueError:
+            except ValueError as err:
                 raise CommandError(
                     f"Invalid target date format: {options['target_date']}. Use YYYY-MM-DD"
-                )
+                ) from err
         else:
             target_date = date.today()
 
@@ -192,7 +195,8 @@ class Command(BaseCommand):
                     if len(data_points) >= batch_size:
                         BiorhythmData.objects.bulk_create(data_points)
                         self.stdout.write(
-                            f"💾 Saved batch: {i + 1 - len(data_points) + 1}-{i + 1} of {total_points}"
+                            f"💾 Saved batch: {i + 1 - len(data_points) + 1}-{i + 1} of "
+                            f"{total_points}"
                         )
                         data_points = []
 
@@ -200,7 +204,8 @@ class Command(BaseCommand):
                 if data_points:
                     BiorhythmData.objects.bulk_create(data_points)
                     self.stdout.write(
-                        f"💾 Saved final batch: {total_points - len(data_points) + 1}-{total_points}"
+                        f"💾 Saved final batch: {total_points - len(data_points) + 1}-"
+                        f"{total_points}"
                     )
 
                 # Summary
@@ -228,7 +233,7 @@ class Command(BaseCommand):
 
         except Exception as e:
             self.stdout.write(self.style.ERROR(f"❌ Error loading data: {str(e)}"))
-            raise CommandError(f"Failed to load biorhythm data: {str(e)}")
+            raise CommandError(f"Failed to load biorhythm data: {str(e)}") from e
 
 
 # Django Q objects already imported above

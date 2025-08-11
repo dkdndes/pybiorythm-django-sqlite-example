@@ -60,7 +60,10 @@ class BiorhythmCalculation(models.Model):
         verbose_name_plural = "Biorhythm Calculations"
 
     def __str__(self):
-        return f"{self.person.name}: {self.start_date} to {self.end_date} ({self.days_calculated} days)"
+        return (
+            f"{self.person.name}: {self.start_date} to {self.end_date} "
+            f"({self.days_calculated} days)"
+        )
 
     @property
     def date_range_str(self):
@@ -128,7 +131,10 @@ class BiorhythmData(models.Model):
         ]
 
     def __str__(self):
-        return f"{self.person.name} - {self.date}: P={self.physical:.3f}, E={self.emotional:.3f}, I={self.intellectual:.3f}"
+        return (
+            f"{self.person.name} - {self.date}: P={self.physical:.3f}, "
+            f"E={self.emotional:.3f}, I={self.intellectual:.3f}"
+        )
 
     @property
     def is_any_critical(self):
