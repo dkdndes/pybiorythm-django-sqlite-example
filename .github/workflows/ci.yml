@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Install uv
+      uses: astral-sh/setup-uv@v1
+      with:
+        version: "latest"
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      run: uv python install ${{ matrix.python-version }}
+    
+    - name: Install dependencies
+      run: uv sync
+    
+    - name: Run migrations
+      run: uv run python manage.py migrate
+    
+    - name: Run tests
+      run: uv run python manage.py test
+    
+    - name: Test management command
+      run: |
+        uv run python manage.py load_biorhythm_data \
+          --name "Test User" \
+          --birthdate "1990-01-01" \
+          --days 30
+    
+    - name: Check Django admin
+      run: uv run python manage.py check
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Build Docker image
+      run: docker build -t pybiorythm-django-sqlite .
+    
+    - name: Test Docker image
+      run: |
+        docker run --rm -d -p 8000:8000 --name test-container pybiorythm-django-sqlite
+        sleep 10
+        curl -f http://localhost:8000/admin/ || exit 1
+        docker stop test-container

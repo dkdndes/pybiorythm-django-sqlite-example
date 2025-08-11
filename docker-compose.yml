@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+      - /app/.venv  # Exclude virtual environment from volume mount
+    environment:
+      - DEBUG=1
+      - PYTHONUNBUFFERED=1
+    command: uv run python manage.py runserver 0.0.0.0:8000
+    
+  # Optional: Add a database service for production use
+  # db:
+  #   image: postgres:15
+  #   environment:
+  #     POSTGRES_DB: biorhythm
+  #     POSTGRES_USER: biorhythm
+  #     POSTGRES_PASSWORD: biorhythm
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   ports:
+  #     - "5432:5432"
+
+# volumes:
+#   postgres_data:
