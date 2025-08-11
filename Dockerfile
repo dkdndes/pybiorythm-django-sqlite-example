@@ -20,9 +20,8 @@ ENV DEBUG=False
 # Copy application code
 COPY . .
 
-# Run migrations and collect static files
+# Run migrations (no static files needed for storage-only example)
 RUN uv run python manage.py migrate
-RUN uv run python manage.py collectstatic --noinput
 
 # Expose port
 EXPOSE 8000
